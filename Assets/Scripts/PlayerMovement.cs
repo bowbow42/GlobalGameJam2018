@@ -11,11 +11,13 @@ public class PlayerMovement : MonoBehaviour
 
     private Rigidbody2D _rb;
     private Collider2D _coll;
+    private CircleCollider2D _circle;
 
     void Start()
     {
         _rb = GetComponent<Rigidbody2D>();
         _coll = GetComponent<BoxCollider2D>();
+        _circle = GetComponent<CircleCollider2D>();
     }
 
     void Update()
@@ -36,9 +38,18 @@ public class PlayerMovement : MonoBehaviour
     private void OnCollisionStay2D(Collision2D collision)
     {
         if (collision.gameObject.CompareTag("Platform"))
+        {
+            ContactPoint2D[] contacts = collision.contacts;
             inAir = false;
+
+
+            foreach (ContactPoint2D contact in contacts)
+            {
+
+            }
+        }
     }
-    
+
     private void OnCollisionExit2D(Collision2D collision)
     {
         if (collision.gameObject.CompareTag("Platform"))
