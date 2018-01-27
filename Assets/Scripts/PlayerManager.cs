@@ -3,9 +3,6 @@ using System.Collections;
 
 public class PlayerManager : MonoBehaviour {
 
-    public int CRCLife = 3;
-    public float TTL = 10f;
-
     public GameObject lastSpawn;
 
 	// Use this for initialization

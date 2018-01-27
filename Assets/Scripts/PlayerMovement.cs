@@ -8,47 +8,60 @@ public class PlayerMovement : MonoBehaviour
     public float movementDampening;
     public float airSpeed;
     public float jumpForce;
+    public Vector2 Gravity;
+    public Vector2 MaxVelocity;
 
     private bool inAir = true;
 
     private Vector2 FloorNormal;
+    private Vector2 MovementDir;
 
-    private Vector2 MaxValocity = new Vector2(10,10);
     private Vector2 Velocity = new Vector2();
     private Vector2 Acceleration = new Vector2();
 
-    private Rigidbody2D _rb;
+    //private Rigidbody2D _rb;
     private Collider2D _coll;
     private CircleCollider2D _circle;
 
     void Start()
     {
-        _rb = GetComponent<Rigidbody2D>();
+       // _rb = GetComponent<Rigidbody2D>();
         _coll = GetComponent<BoxCollider2D>();
         _circle = GetComponent<CircleCollider2D>();
     }
 
     void FixedUpdate() { 
         float leftRightMovement = Input.GetAxis("Horizontal");
-        if (inAir)
+     if (inAir)
         {
             Velocity *= 0.95f;
-            Acceleration.x = leftRightMovement * airSpeed;
+            Acceleration = MovementDir * leftRightMovement * airSpeed + Gravity;
+
+            Velocity += Acceleration * Time.deltaTime;
+
+            if (Mathf.Abs(Velocity.x) > MaxVelocity.x)
+            {
+                if (Velocity.x > 0)
+                    Velocity.x = MaxVelocity.x;
+                else
+                    Velocity.x = -MaxVelocity.x;
+            }
+            transform.position += new Vector3(Velocity.x, Velocity.y, 0) * Time.deltaTime;
+
         }
         else 
         {
+            
             Velocity *= 0.8f;
             Acceleration.x = leftRightMovement * movementSpeed;
+
+            Velocity += Acceleration * Time.deltaTime;
+            // Debug.Log(Velocity);
+            Velocity = Vector2.ClampMagnitude(Velocity, MaxVelocity.x);
+            transform.position += new Vector3(MovementDir.x * Velocity.x, MovementDir.y * Velocity.x, 0) * Time.deltaTime;
         }
 
-        Velocity += Acceleration * Time.deltaTime;
-        Velocity = Vector2.ClampMagnitude(Velocity, 10f);
-
-
-        transform.position += new Vector3(Velocity.x * Time.deltaTime, 0, 0);
-
-        Acceleration.x = 0;
-        Acceleration.y = 0;
+        Acceleration = new Vector2();
     }
 
     void Update()
@@ -59,37 +72,43 @@ public class PlayerMovement : MonoBehaviour
 
     void jump()
     {
-        _rb.AddForce(transform.up * jumpForce);
+        Velocity.y = jumpForce;
         inAir = true;
     }
 
     private void OnCollisionStay2D(Collision2D collision)
     {
+        //Debug.Log("Hit something");
         if (collision.gameObject.CompareTag("Platform"))
         {
-            ContactPoint2D[] contacts = collision.contacts;
-            float x = 0;
-            float y = 0;
+            Velocity.y = 0;
+            FloorNormal = new Vector2();
             int count = 0;
-            for (int i = 0; i < contacts.Length; i++)
+            foreach (ContactPoint2D contact in collision.contacts)
             {
-                if (contacts[i].normal.y - 0.70 <= 0) continue;
+                //if (contact.normal.y - 0.707 <= 0) continue;
+                FloorNormal += contact.normal;
                 count++;
-                x += contacts[i].normal.x;
-                y += contacts[i].normal.x;
             }
-
-            if (count > 0) {
-                x *= 1.0f / count;
-                y *= 1.0f / count;
-                FloorNormal = new Vector2(x, y);
+            
+            if (count > 0)
+            {
+                
+                
+                MovementDir = new Vector2(FloorNormal.y, -FloorNormal.x );
+                if (MovementDir.x < 0)
+                    MovementDir *= -1;
+                Debug.Log("DAvor" + MovementDir);
+                MovementDir = MovementDir / count;
+                Debug.Log(MovementDir);
                 inAir = false;
             }
+            else
+                MovementDir = Vector2.right;
 
-            foreach (ContactPoint2D contact in contacts)
-            {
+            
 
-            }
+            
         }
     }
 
@@ -97,6 +116,7 @@ public class PlayerMovement : MonoBehaviour
     {
         if (collision.gameObject.CompareTag("Platform"))
             inAir = true;
-    }
 
+        MovementDir = Vector2.right;
+    }
 }
