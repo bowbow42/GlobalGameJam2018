@@ -11,6 +11,7 @@ public class GameManager : MonoBehaviour
     public Text m_TimeText;
     public Text m_LevelStartText;
     public Slider m_LevelProgressSlider;
+    public Text m_LifeText;
 
     // loaded prefab for autogeneration
     public GameObject m_Player;
@@ -82,6 +83,8 @@ public class GameManager : MonoBehaviour
         float sliderValue = 100 - (distToDest / maxLength) * 100;
         sliderValue = sliderValue > 100 ? 100 : (sliderValue < 0 ? 0 : sliderValue);
         m_LevelProgressSlider.value = sliderValue;
+        int life = m_Player.GetComponent<PlayerManager>().life;
+        m_LifeText.text = "CRC Life: " + life;
     }
 
     private IEnumerator GameLoop()
