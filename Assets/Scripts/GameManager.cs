@@ -30,6 +30,7 @@ public class GameManager : MonoBehaviour
 
 
     public float m_CurrentTime = 120f;
+    private float m_StartTime;
 
     private int time, a;
     private float x;
@@ -45,6 +46,7 @@ public class GameManager : MonoBehaviour
         m_LevelText.text = "Level 1 - Dei Mudda's Lan";
         m_TimeText.text = "TTL: " + m_CurrentTime;
         m_LevelProgressSlider.value = 100;
+        m_StartTime = m_CurrentTime;
 
         StartCoroutine(GameLoop());
     }
@@ -94,6 +96,16 @@ public class GameManager : MonoBehaviour
         m_LevelProgressSlider.value = sliderValue;
         int life = m_Player.GetComponent<PlayerManager>().life;
         m_LifeText.text = "CRC Life: " + life;
+
+        if (LoseCheck())
+        {
+            Lose();
+        }
+
+        if (WinCheck())
+        {
+            Win();
+        }
     }
 
     private IEnumerator GameLoop()
@@ -107,5 +119,29 @@ public class GameManager : MonoBehaviour
     private IEnumerator RoundStarting()
     {
         yield return m_StartWait;
+    }
+
+    private bool LoseCheck()
+    {
+        return m_Player.GetComponent<PlayerManager>().life < 1;
+    }
+
+    private void Lose()
+    {
+        m_Player.GetComponent<PlayerManager>().Respawn();
+        m_CurrentTime = m_StartTime;
+        GetComponent<EnemySpawner>().SetBack();
+    }
+
+    // TODO
+    private bool WinCheck()
+    {
+        return false;
+    }
+
+    // TODO
+    private void Win()
+    {
+        m_LevelStartText.text = "You won!";
     }
 }
