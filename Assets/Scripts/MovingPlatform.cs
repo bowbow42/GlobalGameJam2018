@@ -6,7 +6,7 @@ public class MovingPlatform : MonoBehaviour {
 
     public Vector3 start;
     public Vector3 end;
-    public float speed;
+    public float speed = 1;
 
     private Vector3 direction;
     private float length;
@@ -18,6 +18,11 @@ public class MovingPlatform : MonoBehaviour {
         direction.Normalize();
         length = Vector3.Distance(end, start);
         transform.position = start;
+
+        if (start == Vector3.zero || end == Vector3.zero)
+        {
+            Debug.Log("Moving Platform Start or End Point is (0,0,0)");
+        }
     }
 
     void Update ()
