@@ -9,8 +9,8 @@ public class MovingPlatformUpAndDown : MovingPlatform
         if (start == Vector3.zero && end == Vector3.zero)
         {
             Vector3 pos = transform.position;
-            start = pos - new Vector3(0, 5, 0);
-            end = pos + new Vector3(0, 5, 0);
+            start = pos - new Vector3(0, -1, 0);
+            end = pos + new Vector3(0, 7, 0);
         }
         base.Start();
         speed = 2;
