@@ -4,7 +4,6 @@ using UnityEngine;
 
 public class DroppingPlatform : MonoBehaviour {
 
-    BoxCollider2D _coll;
     public float gravity = -5f;
     private Vector3 initPos;
     private bool wasTouched = false;
@@ -13,7 +12,6 @@ public class DroppingPlatform : MonoBehaviour {
     private float secondsSinceTouch = 0f;
 
     void Start () {
-        _coll = GetComponent<BoxCollider2D>();
         initPos = transform.position;
 	}
 	

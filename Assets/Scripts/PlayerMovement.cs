@@ -26,6 +26,9 @@ public class PlayerMovement : MonoBehaviour
     private Collider2D _coll;
     private CircleCollider2D _circle;
 
+    private Volume inVolume;
+    private enum Volume { None, Noise, Resistance, Push, Dash, DoubleJump, Floaty};
+
     void Start()
     {
         //_rb = GetComponent<Rigidbody2D>();
@@ -159,37 +162,32 @@ public class PlayerMovement : MonoBehaviour
     float noiseStart = 0.0f;
 
 
-    void OnTriggerEnter2D(Collider2D other)
+    private void OnTriggerStay2D(Collider2D collision)
     {
-        if (other.gameObject.GetComponent<ResistanceVolume>() != null)
+        string tag = collision.gameObject.tag;
+        switch(tag)
         {
-            // we are entered ResistanceVolume!
-            moveResistance = true;
-            Debug.Log("Entered ResistanceVolume");
-        }
-        if (other.gameObject.GetComponent<NoiseVolume>() != null)
-        {
-            // we are entered ResistanceVolume!
-            noisePresent = true;
-            noiseStart = Time.time;
-            Debug.Log("Entered NoiseVolume");
-        }
-    }
-
-    void OnTriggerExit2D(Collider2D other)
-    {
-        if (other.gameObject.GetComponent<ResistanceVolume>() != null)
-        {
-            // we are entered ResistanceVolume!
-            moveResistance = false;
-            Debug.Log("Left ResistanceVolume");
-        }
-        if (other.gameObject.GetComponent<NoiseVolume>() != null)
-        {
-            // we are left NoiseVolume!
-            noisePresent = false;
-            noiseStart = 0;
-            Debug.Log("Left NoiseVolume");
+            case "V_Noise":
+                inVolume = Volume.Noise;
+                break;
+            case "V_Resistance":
+                inVolume = Volume.Resistance;
+                break;
+            case "V_Push":
+                inVolume = Volume.Push;
+                break;
+            case "V_Dash":
+                inVolume = Volume.Dash;
+                break;
+            case "V_DoubleJump":
+                inVolume = Volume.DoubleJump;
+                break;
+            case "Floaty":
+                inVolume = Volume.Floaty;
+                break;
+            default:
+                inVolume = Volume.None;
+                break;
         }
     }
 }
