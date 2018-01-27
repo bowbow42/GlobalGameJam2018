@@ -57,12 +57,21 @@ public class GameManager : MonoBehaviour
             int selectedObj = Random.Range(0, m_Platforms.Length);
 
             m_Level1Cables[i].m_Instance = Instantiate(m_TubePart, new Vector3(m_Platforms[selectedObj].m_Width * i, 0, 0), Quaternion.identity) as GameObject; // prefab, position, rotation
-            if (i == 0) m_Level1Cables[i].m_PadPos = new Vector3(0, -3, 0);
+
+            // when randomness is disabled
+            if (m_Platforms[selectedObj].m_DisableRandomness)
+            {
+                m_Level1Cables[i].m_PadPos = new Vector3(0, 0, 0);
+            }
             else
             {
-                float offSet = Random.Range(-8, 6);
-                while (Mathf.Abs(offSet - m_Level1Cables[i - 1].m_PadPos[1]) > 4) offSet = Random.Range(-8, 6);
-                m_Level1Cables[i].m_PadPos = new Vector3(Random.Range(-1, 1), offSet, 0);
+                if (i == 0) m_Level1Cables[i].m_PadPos = new Vector3(0, -3, 0);
+                else
+                {
+                    float offSet = Random.Range(-8, 6);
+                    while (Mathf.Abs(offSet - m_Level1Cables[i - 1].m_PadPos[1]) > 4) offSet = Random.Range(-8, 6);
+                    m_Level1Cables[i].m_PadPos = new Vector3(Random.Range(-1, 1), offSet, 0);
+                }
             }
             m_Level1Cables[i].m_Platform = Instantiate(m_Platforms[selectedObj].m_GameObject, m_Level1Cables[i].m_PadPos + m_Level1Cables[i].m_Instance.transform.position, Quaternion.identity) as GameObject;
             m_Level1Cables[i].Setup();
