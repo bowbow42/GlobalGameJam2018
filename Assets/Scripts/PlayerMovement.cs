@@ -114,7 +114,7 @@ public class PlayerMovement : MonoBehaviour
 			Acceleration *= getMobilityFactor();
 
             Velocity += Acceleration * Time.deltaTime;
-            Debug.Log(Velocity);
+            //Debug.Log(Velocity);
             
             Velocity.x = Mathf.Sign(Velocity.x) * Mathf.Min(Mathf.Abs(Velocity.x), MaxVelocity.x);
             Velocity.y = Mathf.Sign(Velocity.y) * Mathf.Min(Mathf.Abs(Velocity.y), MaxVelocity.y);
