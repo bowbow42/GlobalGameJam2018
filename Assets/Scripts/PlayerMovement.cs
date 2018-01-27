@@ -39,7 +39,6 @@ public class PlayerMovement : MonoBehaviour
 
     //private Rigidbody2D _rb;
     private Collider2D _coll;
-    private CircleCollider2D _circle;
 
     private Volume inVolume;
     private enum Volume { None, Noise, Resistance, Push, Dash, DoubleJump, Floaty};
@@ -48,7 +47,6 @@ public class PlayerMovement : MonoBehaviour
     {
         //_rb = GetComponent<Rigidbody2D>();
         _coll = GetComponent<BoxCollider2D>();
-        _circle = GetComponent<CircleCollider2D>();
     }
 
     void FixedUpdate() {

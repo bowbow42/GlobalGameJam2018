@@ -10,7 +10,7 @@ public class EnemySpawner : MonoBehaviour {
     private GameObject Player;
     public float timeUntilWaveSpawn = 60f;
     private float waveIntervall = 0f;
-    private int enemyCount = 5;
+    public int EnemyCountPerWave = 2;
 
 
     void Start () {
@@ -43,7 +43,7 @@ public class EnemySpawner : MonoBehaviour {
 
     void SpawnWave ()
     {
-        for (int i = 0; i < enemyCount; i++)
+        for (int i = 0; i < EnemyCountPerWave; i++)
         {
             GameObject enemy = Instantiate(enemyPrefab);
             float height = Random.Range(-6, 9);
@@ -51,6 +51,6 @@ public class EnemySpawner : MonoBehaviour {
             enemy.GetComponent<EnemyMovement>().speed = Random.Range(2, 10);
         }
         waveIntervall = 5f;
-        enemyCount++;
+        EnemyCountPerWave++;
     }
 }
