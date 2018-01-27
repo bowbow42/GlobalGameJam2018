@@ -12,7 +12,7 @@ public class MovingPlatform : MonoBehaviour {
     private float length;
     private bool moveFromStartToEnd = true;
 
-    void Start()
+    public virtual void Start()
     {
         direction = end - start;
         direction.Normalize();
