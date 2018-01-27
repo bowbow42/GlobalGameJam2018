@@ -5,9 +5,10 @@ using UnityEngine;
 public class GearBehaviour : MonoBehaviour {
 
     private bool isTurning = false;
-    private float rotationVelocity = 0.8f;
+    private float rotationVelocity = 1f;
     private float StartAngle = 0f;
     private float TargetAngle = 0f;
+    public bool clockwise = false;
 
     // between 0 and 1 for lerp
     private float AngleProgress = 0f;
@@ -15,7 +16,7 @@ public class GearBehaviour : MonoBehaviour {
     private void Start()
     {
         StartAngle = transform.eulerAngles.z;
-        TargetAngle = StartAngle + 90f;
+        TargetAngle = clockwise ? StartAngle - 90f : StartAngle + 90f;
     }
 
     void Update () {
@@ -29,8 +30,16 @@ public class GearBehaviour : MonoBehaviour {
             {
                 isTurning = false;
                 AngleProgress = 0f;
-                StartAngle += 90f;
-                TargetAngle += 90f;
+                if (clockwise)
+                {
+                    StartAngle -= 90f;
+                    TargetAngle -= 90f;
+                }
+                else
+                {
+                    StartAngle += 90f;
+                    TargetAngle += 90f;
+                }
                 transform.eulerAngles = new Vector3(transform.rotation.eulerAngles.x, transform.rotation.eulerAngles.y, StartAngle);
             }
         }
