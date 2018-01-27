@@ -1,6 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using System.Collections.Generic;
 
 public class EnemySpawner : MonoBehaviour {
 
@@ -13,6 +14,7 @@ public class EnemySpawner : MonoBehaviour {
     private float waveIntervall = 0f;
     public int EnemyCountPerWave = 2;
     private int startEnemyCountPerWave;
+    private List<GameObject> enemies = new List<GameObject>();
 
 
     void Start () {
@@ -43,6 +45,7 @@ public class EnemySpawner : MonoBehaviour {
         enemy.transform.position = new Vector3(Player.transform.position.x + 30, height, 0);
         enemy.GetComponent<EnemyMovement>().speed = Random.Range(-10, -2);
         secondsUntilNextSpawn = Random.Range(2, 8);
+        enemies.Add(enemy);
     }
 
     void SpawnWave ()
@@ -53,6 +56,7 @@ public class EnemySpawner : MonoBehaviour {
             float height = Random.Range(-6, 9);
             enemy.transform.position = new Vector3(Player.transform.position.x - 30, height, 0);
             enemy.GetComponent<EnemyMovement>().speed = Random.Range(2, 10);
+            enemies.Add(enemy);
         }
         waveIntervall = 5f;
         EnemyCountPerWave++;
@@ -61,7 +65,13 @@ public class EnemySpawner : MonoBehaviour {
     public void SetBack()
     {
         timeUntilWaveSpawn = startTimeUntilWaveSpawn;
+
         EnemyCountPerWave = startEnemyCountPerWave;
-        timeUntilWaveSpawn = 0f;
+        waveIntervall = 0f;
+        foreach(GameObject enemy in enemies)
+        {
+            Destroy(enemy, 0.1f);
+        }
+        enemies.Clear();
     }
 }
