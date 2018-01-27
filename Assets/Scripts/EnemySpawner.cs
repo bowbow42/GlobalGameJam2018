@@ -8,7 +8,6 @@ public class EnemySpawner : MonoBehaviour {
 
     private float secondsUntilNextSpawn = 2f;
     private GameObject Player;
-    private GameManager GM;
     public float timeUntilWaveSpawn = 60f;
     private float waveIntervall = 0f;
     private int enemyCount = 5;
@@ -16,7 +15,6 @@ public class EnemySpawner : MonoBehaviour {
 
     void Start () {
         Player = GameObject.FindGameObjectWithTag("Player");
-        GM = GetComponent<GameManager>();
     }
 	
 	void Update () {

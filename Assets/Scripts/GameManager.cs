@@ -28,7 +28,7 @@ public class GameManager : MonoBehaviour
     public GameObject[] m_Platforms;
 
 
-    private float m_CurrentTime = 120f;
+    public float m_CurrentTime = 120f;
 
     private int time, a;
     private float x;

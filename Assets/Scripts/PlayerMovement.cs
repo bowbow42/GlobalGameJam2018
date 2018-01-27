@@ -116,12 +116,7 @@ public class PlayerMovement : MonoBehaviour
             if(dashCounter > dashCounterMax)
                 dashStart = Time.time;
         }
-
-<<<<<<< HEAD
-        //Debug.Log(Velocity);
-=======
-        Debug.Log(Velocity);
->>>>>>> 69df152110e2fce75c84884b312409dfd2802c3e
+        
         Acceleration = new Vector2();
 
         if (dashStart > 0.0f && dashStart + dashTimeOut < Time.time)
