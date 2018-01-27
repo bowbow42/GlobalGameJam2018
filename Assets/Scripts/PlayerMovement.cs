@@ -9,8 +9,8 @@ public class PlayerMovement : MonoBehaviour
     public float airSpeed;
     public float jumpForce;
     public float reboundFactor = 0.5f;
-    public float dashForce;
-    public float dashTimeOut;
+    public float dashForce = 20;
+    public float dashTimeOut = 1;
     public int dashCounterMax = 3;
     public float leaveGroundInterval;
     public float leaveGroundDistance;
@@ -22,12 +22,12 @@ public class PlayerMovement : MonoBehaviour
     public int multiJumpCounterMax = 1;
     private int jumpCounter = 0;
 
-    private float dashStart;
+    public float dashTimer = 0.45f;
+    private float dashStart = 0.0f;
+    private float dashTimeOutTimer = 0.0f;
     private int dashCounter = 0; 
     private bool dashing = false;
     private Vector2 saveVelocity;
-    private int dashFrames = 2;
-    private int dashFrameCounter = 0;
 
     private Vector2 FloorNormal;
     private Vector2 MovementDir;
@@ -64,17 +64,32 @@ public class PlayerMovement : MonoBehaviour
         if (dashing)
         {
             //transform.position += new Vector3(MovementDir.x, MovementDir.y, 0) * dashForce * Mathf.Sign(leftRightMovement);
-            transform.position += new Vector3(saveVelocity.x, saveVelocity.y) * dashForce * Time.deltaTime;
+            Vector2 dashVector = saveVelocity * dashForce * Time.deltaTime;
+            RaycastHit2D[] hits = new RaycastHit2D[4];
+            if (_coll.Cast(dashVector.normalized, hits, dashVector.magnitude, true) > 0)
+            {
+                foreach(RaycastHit2D hit in hits)
+                {
+                    if(hit.collider.CompareTag("Platform"))
+                    {
+                        dashVector = dashVector.normalized * hit.distance;
+                        break;
+                    }
+                }
+            }
+
+            //transform.position += new Vector3(saveVelocity.x, saveVelocity.y) * dashForce * Time.deltaTime;
+            transform.position += new Vector3(dashVector.x, dashVector.y);
+
             
-
-            dashFrameCounter++;
-            if (dashFrameCounter < dashFrames)
+            if (dashStart + dashTimer > Time.time)
                 return;
-
+            if(inAir)
+                Velocity.y = 10;
             dashing = false;
             Debug.Log(dashCounter);
             //if (dashCounter >= dashCounterMax)
-            dashStart = Time.time;         
+            dashTimeOutTimer = Time.time;         
         }
         
 
@@ -132,9 +147,9 @@ public class PlayerMovement : MonoBehaviour
             
         }
 
-        if (dashStart > 0.0f && dashStart + dashTimeOut < Time.time)
+        if (dashTimeOutTimer > 0.0f && dashTimeOutTimer + dashTimeOut < Time.time)
         {
-            dashStart = 0.0f;
+            dashTimeOutTimer = 0.0f;
             dashCounter = 0;
         }
 
@@ -167,7 +182,7 @@ public class PlayerMovement : MonoBehaviour
         if (!dashing && dashCounter < dashCounterMax)
         {
             dashCounter++;
-            dashFrameCounter = 0;
+            dashStart = Time.time;
             dashing = true;
 //            saveVelocity = Velocity.normalized;
             saveVelocity = Mathf.Sign(Input.GetAxis("Horizontal")) * MovementDir;
