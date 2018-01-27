@@ -10,8 +10,6 @@ public class CableManager {
     
     // Initializes Part of the cable
     public void Setup () {
-        //MeshRenderer renderer = m_Platform.GetComponentInChildren<MeshRenderer>();
-        //renderer.material = m_Textures[0];
     }
 	
 }

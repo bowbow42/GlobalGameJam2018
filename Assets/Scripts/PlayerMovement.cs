@@ -91,6 +91,7 @@ public class PlayerMovement : MonoBehaviour
             
         }
 
+        Debug.Log(Velocity);
         Acceleration = new Vector2();
     }
 
