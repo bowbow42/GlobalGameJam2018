@@ -30,6 +30,7 @@ public class GameManager : MonoBehaviour
 
 
     public float m_CurrentTime = 120f;
+    private float m_StartTime;
 
     private int time, a;
     private float x;
@@ -45,6 +46,7 @@ public class GameManager : MonoBehaviour
         m_LevelText.text = "Level 1 - Dei Mudda's Lan";
         m_TimeText.text = "TTL: " + m_CurrentTime;
         m_LevelProgressSlider.value = 100;
+        m_StartTime = m_CurrentTime;
 
         StartCoroutine(GameLoop());
     }
@@ -57,12 +59,21 @@ public class GameManager : MonoBehaviour
             int selectedObj = Random.Range(0, m_Platforms.Length);
 
             m_Level1Cables[i].m_Instance = Instantiate(m_TubePart, new Vector3(m_Platforms[selectedObj].m_Width * i, 0, 0), Quaternion.identity) as GameObject; // prefab, position, rotation
-            if (i == 0) m_Level1Cables[i].m_PadPos = new Vector3(0, -3, 0);
+
+            // when randomness is disabled
+            if (m_Platforms[selectedObj].m_DisableRandomness)
+            {
+                m_Level1Cables[i].m_PadPos = new Vector3(0, 0, 0);
+            }
             else
             {
-                float offSet = Random.Range(-8, 6);
-                while (Mathf.Abs(offSet - m_Level1Cables[i - 1].m_PadPos[1]) > 4) offSet = Random.Range(-8, 6);
-                m_Level1Cables[i].m_PadPos = new Vector3(Random.Range(-1, 1), offSet, 0);
+                if (i == 0) m_Level1Cables[i].m_PadPos = new Vector3(0, -3, 0);
+                else
+                {
+                    float offSet = Random.Range(-8, 6);
+                    while (Mathf.Abs(offSet - m_Level1Cables[i - 1].m_PadPos[1]) > 4) offSet = Random.Range(-8, 6);
+                    m_Level1Cables[i].m_PadPos = new Vector3(Random.Range(-1, 1), offSet, 0);
+                }
             }
             m_Level1Cables[i].m_Platform = Instantiate(m_Platforms[selectedObj].m_GameObject, m_Level1Cables[i].m_PadPos + m_Level1Cables[i].m_Instance.transform.position, Quaternion.identity) as GameObject;
             m_Level1Cables[i].Setup();
@@ -85,6 +96,16 @@ public class GameManager : MonoBehaviour
         m_LevelProgressSlider.value = sliderValue;
         int life = m_Player.GetComponent<PlayerManager>().life;
         m_LifeText.text = "CRC Life: " + life;
+
+        if (LoseCheck())
+        {
+            Lose();
+        }
+
+        if (WinCheck())
+        {
+            Win();
+        }
     }
 
     private IEnumerator GameLoop()
@@ -98,5 +119,29 @@ public class GameManager : MonoBehaviour
     private IEnumerator RoundStarting()
     {
         yield return m_StartWait;
+    }
+
+    private bool LoseCheck()
+    {
+        return m_Player.GetComponent<PlayerManager>().life < 1;
+    }
+
+    private void Lose()
+    {
+        m_Player.GetComponent<PlayerManager>().Respawn();
+        m_CurrentTime = m_StartTime;
+        GetComponent<EnemySpawner>().SetBack();
+    }
+
+    // TODO
+    private bool WinCheck()
+    {
+        return false;
+    }
+
+    // TODO
+    private void Win()
+    {
+        m_LevelStartText.text = "You won!";
     }
 }

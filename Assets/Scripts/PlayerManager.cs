@@ -4,6 +4,8 @@ using System.Collections;
 public class PlayerManager : MonoBehaviour {
 
     public GameObject lastSpawn;
+
+    // Is checked in GameManager to Reset the whole level
     public int life = 5;
     private int startLife;
     private float invincibleSince = 0f;
@@ -31,7 +33,7 @@ public class PlayerManager : MonoBehaviour {
         if (collision.gameObject.CompareTag("Enemy"))
             DamagePlayer();
         if (collision.gameObject.name == "Pit")
-            Respawn();
+            life -= startLife;
     }
 
     public void DamagePlayer()
@@ -40,18 +42,13 @@ public class PlayerManager : MonoBehaviour {
         {
             invincible = true;
             life--;
-            Debug.Log("Damaged - Life: " + life);
-            if (life < 1)
-            {
-                Respawn();
-            }
         }
     }
 
+    // Is only called in GameManager to Reset the whole level
     public void Respawn()
     {
         transform.position = lastSpawn.transform.position;
         life = startLife;
-        Debug.Log("Respawned - Life: " + life);
     }
 }
