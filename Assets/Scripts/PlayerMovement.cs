@@ -8,6 +8,7 @@ public class PlayerMovement : MonoBehaviour
     public float movementDampening;
     public float airSpeed;
     public float jumpForce;
+    public float reboundFactor = 0.5f;
     public float dashForce;
     public float dashTimeOut;
     public int dashCounterMax = 3;
@@ -24,6 +25,9 @@ public class PlayerMovement : MonoBehaviour
     private float dashStart;
     private int dashCounter = 0; 
     private bool dashing = false;
+    private Vector2 saveVelocity;
+    private int dashFrames = 2;
+    private int dashFrameCounter = 0;
 
     private Vector2 FloorNormal;
     private Vector2 MovementDir;
@@ -39,6 +43,7 @@ public class PlayerMovement : MonoBehaviour
 
     //private Rigidbody2D _rb;
     private Collider2D _coll;
+    private CircleCollider2D _circle;
 
     private Volume inVolume;
     private enum Volume { None, Noise, Resistance, Push, Dash, DoubleJump, Floaty};
@@ -47,13 +52,33 @@ public class PlayerMovement : MonoBehaviour
     {
         //_rb = GetComponent<Rigidbody2D>();
         _coll = GetComponent<BoxCollider2D>();
+        _circle = GetComponent<CircleCollider2D>();
     }
 
     void FixedUpdate() {
         tickNoise();
         float leftRightMovement = Input.GetAxis("Horizontal");
 
-		if (inAir)
+        
+
+        if (dashing)
+        {
+            //transform.position += new Vector3(MovementDir.x, MovementDir.y, 0) * dashForce * Mathf.Sign(leftRightMovement);
+            transform.position += new Vector3(saveVelocity.x, saveVelocity.y) * dashForce * Time.deltaTime;
+            
+
+            dashFrameCounter++;
+            if (dashFrameCounter < dashFrames)
+                return;
+
+            dashing = false;
+            Debug.Log(dashCounter);
+            //if (dashCounter >= dashCounterMax)
+            dashStart = Time.time;         
+        }
+        
+
+        if (inAir)
 		{
             //Velocity.y *= 0.99f;
             Acceleration = MovementDir * leftRightMovement * airSpeed + Gravity;
@@ -106,22 +131,14 @@ public class PlayerMovement : MonoBehaviour
 
             
         }
-        if (dashing)
-        {
-            transform.position += new Vector3(MovementDir.x, MovementDir.y, 0) * dashForce * Mathf.Sign(leftRightMovement);
-            dashing = false;
-            Debug.Log(dashCounter);
-            if(dashCounter > dashCounterMax)
-                dashStart = Time.time;
-        }
-        
-        Acceleration = new Vector2();
 
         if (dashStart > 0.0f && dashStart + dashTimeOut < Time.time)
         {
             dashStart = 0.0f;
             dashCounter = 0;
         }
+
+        Acceleration = new Vector2();
     }
 
     void Update()
@@ -141,21 +158,24 @@ public class PlayerMovement : MonoBehaviour
         }
         if(Input.GetButtonDown("Dash"))
         {
-            if(dashStart == 0)
-            {
-                dash();
-                
-            }
-            
+                dash();           
         }
     }
 
     void dash()
     {
-        if (dashCounter <= dashCounterMax)
+        if (!dashing && dashCounter < dashCounterMax)
         {
             dashCounter++;
+            dashFrameCounter = 0;
             dashing = true;
+//            saveVelocity = Velocity.normalized;
+            saveVelocity = Mathf.Sign(Input.GetAxis("Horizontal")) * MovementDir;
+            if (Mathf.Sign(saveVelocity.x) != Mathf.Sign(Velocity.x))
+            {
+                Velocity.x = 0;
+                saveVelocity = Vector2.right * Mathf.Sign(Input.GetAxis("Horizontal"));
+            }
         }
     }
 
@@ -216,7 +236,7 @@ public class PlayerMovement : MonoBehaviour
                 }
                 slideCounter++;
                 MovementDir = Vector2.right;
-                Velocity = Vector2.Reflect(Velocity, CollisionNormal.normalized);
+                Velocity = Vector2.Reflect(Velocity, CollisionNormal.normalized) * reboundFactor;
                 inAir = true;              
             }   
         }
