@@ -4,13 +4,9 @@ using UnityEngine;
 
 public class EnemyMovement : MonoBehaviour {
 
-    public bool goRight;
+    public float speed = -5f;
 	
 	void Update () {
-        if(!goRight)
-            transform.position += new Vector3(-5 * Time.deltaTime, 0, 0);
-        else
-            transform.position += new Vector3(5 * Time.deltaTime, 0, 0);
-
+        transform.position += new Vector3(speed * Time.deltaTime, 0, 0);
     }
 }
