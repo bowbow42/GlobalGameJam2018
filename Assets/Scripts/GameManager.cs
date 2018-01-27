@@ -1,6 +1,5 @@
 ﻿using System.Collections;
 using UnityEngine;
-using UnityEngine.SceneManagement;
 using UnityEngine.UI;
 
 public class GameManager : MonoBehaviour
@@ -25,6 +24,10 @@ public class GameManager : MonoBehaviour
     public CableManager[] m_Level1Cables;
 
 
+    // cable assets for random game design
+    public GameObject[] m_Platforms;
+
+
     private float m_CurrentTime = 120f;
 
     private int time, a;
@@ -38,7 +41,7 @@ public class GameManager : MonoBehaviour
         SpawnAllGameElements();
 
         //m_LevelStartText.text = "";
-        m_LevelText.text = "Level 1 - Deine Mudda";
+        m_LevelText.text = "Level 1 - Dei Mudda's Lan";
         m_TimeText.text = "TTL: " + m_CurrentTime;
         m_LevelProgressSlider.value = 100;
 
@@ -54,10 +57,11 @@ public class GameManager : MonoBehaviour
             if (i == 0) m_Level1Cables[i].m_PadPos = new Vector3(0, -3, 0);
             else
             {
-                float offSet = Random.Range(-9, 6);
-                while (Mathf.Abs(offSet - m_Level1Cables[i - 1].m_PadPos[1]) > 4) offSet = Random.Range(-9, 6);
-                m_Level1Cables[i].m_PadPos = new Vector3(Random.Range(-4, 4), offSet, 0);
+                float offSet = Random.Range(-8, 6);
+                while (Mathf.Abs(offSet - m_Level1Cables[i - 1].m_PadPos[1]) > 4) offSet = Random.Range(-8, 6);
+                m_Level1Cables[i].m_PadPos = new Vector3(Random.Range(-1, 1), offSet, 0);
             }
+            m_Level1Cables[i].m_Platform = Instantiate(m_Platforms[Random.Range(0, m_Platforms.Length)], m_Level1Cables[i].m_PadPos + m_Level1Cables[i].m_Instance.transform.position, Quaternion.identity) as GameObject;
             m_Level1Cables[i].Setup();
         }
     }
