@@ -10,9 +10,9 @@ public class MovingPlatform : MonoBehaviour {
 
     private Vector3 direction;
     private float length;
-    private bool moveFromStartToEnd = true;
+    protected bool moveFromStartToEnd = true;
 
-    void Start()
+    public virtual void Start()
     {
         direction = end - start;
         direction.Normalize();

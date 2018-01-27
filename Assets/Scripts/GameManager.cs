@@ -11,6 +11,7 @@ public class GameManager : MonoBehaviour
     public Text m_TimeText;
     public Text m_LevelStartText;
     public Slider m_LevelProgressSlider;
+    public Text m_LifeText;
 
     // loaded prefab for autogeneration
     public GameObject m_Player;
@@ -25,7 +26,7 @@ public class GameManager : MonoBehaviour
 
 
     // cable assets for random game design
-    public GameObject[] m_Platforms;
+    public PlatFormManager[] m_Platforms;
 
 
     public float m_CurrentTime = 120f;
@@ -53,7 +54,9 @@ public class GameManager : MonoBehaviour
     {
         for (int i = 0; i < m_Level1Cables.Length; i++)
         {
-            m_Level1Cables[i].m_Instance = Instantiate(m_TubePart, new Vector3(12 * i, 0, 0), Quaternion.identity) as GameObject; // prefab, position, rotation
+            int selectedObj = Random.Range(0, m_Platforms.Length);
+
+            m_Level1Cables[i].m_Instance = Instantiate(m_TubePart, new Vector3(m_Platforms[selectedObj].m_Width * i, 0, 0), Quaternion.identity) as GameObject; // prefab, position, rotation
             if (i == 0) m_Level1Cables[i].m_PadPos = new Vector3(0, -3, 0);
             else
             {
@@ -61,7 +64,7 @@ public class GameManager : MonoBehaviour
                 while (Mathf.Abs(offSet - m_Level1Cables[i - 1].m_PadPos[1]) > 4) offSet = Random.Range(-8, 6);
                 m_Level1Cables[i].m_PadPos = new Vector3(Random.Range(-1, 1), offSet, 0);
             }
-            m_Level1Cables[i].m_Platform = Instantiate(m_Platforms[Random.Range(0, m_Platforms.Length)], m_Level1Cables[i].m_PadPos + m_Level1Cables[i].m_Instance.transform.position, Quaternion.identity) as GameObject;
+            m_Level1Cables[i].m_Platform = Instantiate(m_Platforms[selectedObj].m_GameObject, m_Level1Cables[i].m_PadPos + m_Level1Cables[i].m_Instance.transform.position, Quaternion.identity) as GameObject;
             m_Level1Cables[i].Setup();
         }
     }
@@ -80,6 +83,8 @@ public class GameManager : MonoBehaviour
         float sliderValue = 100 - (distToDest / maxLength) * 100;
         sliderValue = sliderValue > 100 ? 100 : (sliderValue < 0 ? 0 : sliderValue);
         m_LevelProgressSlider.value = sliderValue;
+        int life = m_Player.GetComponent<PlayerManager>().life;
+        m_LifeText.text = "CRC Life: " + life;
     }
 
     private IEnumerator GameLoop()
