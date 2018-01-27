@@ -14,5 +14,9 @@ public class MovingPlatformUpAndDown : MovingPlatform
         }
         base.Start();
         speed = 2;
+
+        // Randomized position and direction
+        transform.position = Vector3.Lerp(start, end, Random.value);
+        moveFromStartToEnd = Random.value > 0.5;
     }
 }
