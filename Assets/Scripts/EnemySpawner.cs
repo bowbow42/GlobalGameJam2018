@@ -9,12 +9,16 @@ public class EnemySpawner : MonoBehaviour {
     private float secondsUntilNextSpawn = 2f;
     private GameObject Player;
     public float timeUntilWaveSpawn = 60f;
+    private float startTimeUntilWaveSpawn;
     private float waveIntervall = 0f;
     public int EnemyCountPerWave = 2;
+    private int startEnemyCountPerWave;
 
 
     void Start () {
         Player = GameObject.FindGameObjectWithTag("Player");
+        startTimeUntilWaveSpawn = timeUntilWaveSpawn;
+        startEnemyCountPerWave = EnemyCountPerWave;
     }
 	
 	void Update () {
@@ -52,5 +56,12 @@ public class EnemySpawner : MonoBehaviour {
         }
         waveIntervall = 5f;
         EnemyCountPerWave++;
+    }
+
+    public void SetBack()
+    {
+        timeUntilWaveSpawn = startTimeUntilWaveSpawn;
+        EnemyCountPerWave = startEnemyCountPerWave;
+        timeUntilWaveSpawn = 0f;
     }
 }
