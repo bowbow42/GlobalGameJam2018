@@ -17,9 +17,13 @@ public class GameManager : MonoBehaviour
     public GameObject m_Player;
     public GameObject m_TubePart;
 
+    // game delays
+    public float m_StartDelay = 3f;
+    private WaitForSeconds m_StartWait;
+
     // collections for all levels
     public CableManager[] m_Level1Cables;
-    
+
 
     private float m_CurrentTime = 120f;
 
@@ -29,12 +33,16 @@ public class GameManager : MonoBehaviour
 
     private void Start()
     {
+        m_StartWait = new WaitForSeconds(m_StartDelay);
+
         SpawnAllGameElements();
 
-        m_LevelStartText.text = "";
-        m_LevelText.text = "";
+        //m_LevelStartText.text = "";
+        m_LevelText.text = "Level 1 - Deine Mudda";
         m_TimeText.text = "TTL: " + m_CurrentTime;
         m_LevelProgressSlider.value = 100;
+
+        StartCoroutine(GameLoop());
     }
 
 
@@ -43,6 +51,13 @@ public class GameManager : MonoBehaviour
         for (int i = 0; i < m_Level1Cables.Length; i++)
         {
             m_Level1Cables[i].m_Instance = Instantiate(m_TubePart, new Vector3(12 * i, 0, 0), Quaternion.identity) as GameObject; // prefab, position, rotation
+            if (i == 0) m_Level1Cables[i].m_PadPos = new Vector3(0, -3, 0);
+            else
+            {
+                float offSet = Random.Range(-9, 6);
+                while (Mathf.Abs(offSet - m_Level1Cables[i - 1].m_PadPos[1]) > 4) offSet = Random.Range(-9, 6);
+                m_Level1Cables[i].m_PadPos = new Vector3(Random.Range(-4, 4), offSet, 0);
+            }
             m_Level1Cables[i].Setup();
         }
     }
@@ -55,11 +70,24 @@ public class GameManager : MonoBehaviour
             m_TimeText.text = "TTL: " + (int)m_CurrentTime;
         }
 
-        
+
         float maxLength = (m_Level1Cables[0].m_Instance.transform.position - m_Level1Cables[m_Level1Cables.Length - 1].m_Instance.transform.position).magnitude;
         float distToDest = (m_Player.transform.position - m_Level1Cables[m_Level1Cables.Length - 1].m_Instance.transform.position).magnitude;
         float sliderValue = 100 - (distToDest / maxLength) * 100;
         sliderValue = sliderValue > 100 ? 100 : (sliderValue < 0 ? 0 : sliderValue);
         m_LevelProgressSlider.value = sliderValue;
+    }
+
+    private IEnumerator GameLoop()
+    {
+        // Start off by running the 'RoundStarting' coroutine but don't return until it's finished.
+        m_LevelStartText.text = "Level started";
+        yield return StartCoroutine(RoundStarting());
+        m_LevelStartText.text = "";
+    }
+
+    private IEnumerator RoundStarting()
+    {
+        yield return m_StartWait;
     }
 }

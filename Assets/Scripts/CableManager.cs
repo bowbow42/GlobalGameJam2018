@@ -5,7 +5,7 @@ using UnityEngine;
 public class CableManager {
 
     public Color m_PadColor = Color.white;
-    public Vector3 m_PadPos;
+    [HideInInspector] public Vector3 m_PadPos;
     [HideInInspector] public GameObject m_Instance;
     
     // Initializes Part of the cable
