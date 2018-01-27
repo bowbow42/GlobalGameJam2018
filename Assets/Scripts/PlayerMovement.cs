@@ -23,6 +23,7 @@ public class PlayerMovement : MonoBehaviour
     private int jumpCounter = 0;
 
     public float dashTimer = 0.45f;
+    public float dashFloating = 0.0f;
     private float dashStart = 0.0f;
     private float dashTimeOutTimer = 0.0f;
     private int dashCounter = 0; 
@@ -85,9 +86,9 @@ public class PlayerMovement : MonoBehaviour
             if (dashStart + dashTimer > Time.time)
                 return;
             if(inAir)
-                Velocity.y = 10;
+                Velocity.y = dashFloating;
             dashing = false;
-            Debug.Log(dashCounter);
+            //Debug.Log(dashCounter);
             //if (dashCounter >= dashCounterMax)
             dashTimeOutTimer = Time.time;         
         }
@@ -113,7 +114,7 @@ public class PlayerMovement : MonoBehaviour
 			Acceleration *= getMobilityFactor();
 
             Velocity += Acceleration * Time.deltaTime;
-            // Debug.Log(Velocity);
+            Debug.Log(Velocity);
             
             Velocity.x = Mathf.Sign(Velocity.x) * Mathf.Min(Mathf.Abs(Velocity.x), MaxVelocity.x);
             Velocity.y = Mathf.Sign(Velocity.y) * Mathf.Min(Mathf.Abs(Velocity.y), MaxVelocity.y);
@@ -207,8 +208,8 @@ public class PlayerMovement : MonoBehaviour
     {
         //Debug.Log("Hit something");
         
-        if (collision.gameObject.CompareTag("Platform"))
-        {
+        //if (collision.gameObject.CompareTag("Platform"))
+        //{
             
             Vector2 CollisionNormal = new Vector2();
             FloorNormal = new Vector2();
@@ -247,6 +248,7 @@ public class PlayerMovement : MonoBehaviour
                     if (MovementDir.y > 0)
                         MovementDir *= -1;
                     inAir = false;
+                    transform.position += new Vector3(CollisionNormal.x, CollisionNormal.y) * Time.deltaTime;
                     return;
                 }
                 slideCounter++;
@@ -255,7 +257,7 @@ public class PlayerMovement : MonoBehaviour
                 inAir = true;              
             }   
         }
-    }
+    //}
 
     private void OnCollisionExit2D(Collision2D collision)
     {
