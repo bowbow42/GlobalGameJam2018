@@ -33,22 +33,25 @@ public class PlayerMovement : MonoBehaviour
         _circle = GetComponent<CircleCollider2D>();
     }
 
-    void FixedUpdate() { 
+    void FixedUpdate() {
+        tickNoise();
         float leftRightMovement = Input.GetAxis("Horizontal");
-        if (inAir)
-        {
+
+		if (inAir)
+		{
             Velocity *= 0.95f;
             Acceleration = MovementDir * leftRightMovement * airSpeed + Gravity;
+			Acceleration *= getMobilityFactor();
 
             Velocity += Acceleration * Time.deltaTime;
             Velocity.x = Mathf.Sign(Velocity.x) * Mathf.Min(Mathf.Abs(Velocity.x), MaxVelocity.x);
             transform.position += new Vector3(Velocity.x, Velocity.y, 0) * Time.deltaTime;
-
         }
         else 
         {
             Velocity *= 0.8f;
             Acceleration.x = leftRightMovement * movementSpeed;
+			Acceleration *= getMobilityFactor();
 
             Velocity += Acceleration * Time.deltaTime;
             // Debug.Log(Velocity);
@@ -118,8 +121,6 @@ public class PlayerMovement : MonoBehaviour
             
             if (count > 0)
             {
-                
-                
                 MovementDir = new Vector2(FloorNormal.y, -FloorNormal.x );
                 if (MovementDir.x < 0)
                     MovementDir *= -1;
@@ -128,10 +129,6 @@ public class PlayerMovement : MonoBehaviour
             }
             else
                 MovementDir = Vector2.right;
-
-            
-
-            
         }
     }
 
@@ -139,8 +136,60 @@ public class PlayerMovement : MonoBehaviour
     {
         if (collision.gameObject.CompareTag("Platform"))
             leaveGroundStart = Time.time;
-       
+    }
 
-        
+    private float getMobilityFactor()
+    {
+        return moveResistance ? 0.7f : 1f;
+    }
+
+    private void tickNoise()
+    {
+        if (noisePresent) {
+            if (noiseStart + 5f < Time.time) { 
+                // we take damge
+                Debug.Log("We took damage.");
+                noiseStart = Time.time;
+            }
+        }
+    }
+
+    bool moveResistance = false;
+    bool noisePresent = false;
+    float noiseStart = 0.0f;
+
+
+    void OnTriggerEnter2D(Collider2D other)
+    {
+        if (other.gameObject.GetComponent<ResistanceVolume>() != null)
+        {
+            // we are entered ResistanceVolume!
+            moveResistance = true;
+            Debug.Log("Entered ResistanceVolume");
+        }
+        if (other.gameObject.GetComponent<NoiseVolume>() != null)
+        {
+            // we are entered ResistanceVolume!
+            noisePresent = true;
+            noiseStart = Time.time;
+            Debug.Log("Entered NoiseVolume");
+        }
+    }
+
+    void OnTriggerExit2D(Collider2D other)
+    {
+        if (other.gameObject.GetComponent<ResistanceVolume>() != null)
+        {
+            // we are entered ResistanceVolume!
+            moveResistance = false;
+            Debug.Log("Left ResistanceVolume");
+        }
+        if (other.gameObject.GetComponent<NoiseVolume>() != null)
+        {
+            // we are left NoiseVolume!
+            noisePresent = false;
+            noiseStart = 0;
+            Debug.Log("Left NoiseVolume");
+        }
     }
 }

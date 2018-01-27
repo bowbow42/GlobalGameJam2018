@@ -4,6 +4,7 @@ using System.Collections;
 public class PlayerManager : MonoBehaviour {
 
     public GameObject lastSpawn;
+     
 
 	// Use this for initialization
 	void Start () {
