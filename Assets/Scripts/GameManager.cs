@@ -1,6 +1,5 @@
 ﻿using System.Collections;
 using UnityEngine;
-using UnityEngine.SceneManagement;
 using UnityEngine.UI;
 
 public class GameManager : MonoBehaviour
@@ -23,6 +22,10 @@ public class GameManager : MonoBehaviour
 
     // collections for all levels
     public CableManager[] m_Level1Cables;
+
+
+    // cable assets for random game design
+    public GameObject[] m_Platforms;
 
 
     private float m_CurrentTime = 120f;
@@ -56,8 +59,9 @@ public class GameManager : MonoBehaviour
             {
                 float offSet = Random.Range(-9, 6);
                 while (Mathf.Abs(offSet - m_Level1Cables[i - 1].m_PadPos[1]) > 4) offSet = Random.Range(-9, 6);
-                m_Level1Cables[i].m_PadPos = new Vector3(Random.Range(-4, 4), offSet, 0);
+                m_Level1Cables[i].m_PadPos = new Vector3(Random.Range(-2, 2), offSet, 0);
             }
+            m_Level1Cables[i].m_Platform = Instantiate(m_Platforms[Random.Range(0, m_Platforms.Length)], m_Level1Cables[i].m_PadPos + m_Level1Cables[i].m_Instance.transform.position, Quaternion.identity) as GameObject;
             m_Level1Cables[i].Setup();
         }
     }
