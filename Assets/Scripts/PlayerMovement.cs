@@ -98,9 +98,7 @@ public class PlayerMovement : MonoBehaviour
                 MovementDir = new Vector2(FloorNormal.y, -FloorNormal.x );
                 if (MovementDir.x < 0)
                     MovementDir *= -1;
-                Debug.Log("DAvor" + MovementDir);
-                MovementDir = MovementDir / count;
-                Debug.Log(MovementDir);
+                MovementDir = MovementDir / count;               
                 inAir = false;
             }
             else
