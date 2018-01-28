@@ -55,6 +55,12 @@ public class PlayerMovement : MonoBehaviour
 
     private Collider2D _coll;
     private CircleCollider2D _circle;
+    private AudioSource _audioSource;
+
+    public AudioClip[] moveSounds;
+    public AudioClip[] dmgSounds;
+    private int dmgClipCounter = 0;
+    private int moveClipCounter = 0;
 
     //Area Enum
     private Volume inVolume;
@@ -64,6 +70,7 @@ public class PlayerMovement : MonoBehaviour
     {
         _coll = GetComponent<BoxCollider2D>();
         _circle = GetComponent<CircleCollider2D>();
+        _audioSource = GetComponent<AudioSource>();
     }
 
     public void reset(){
@@ -212,6 +219,7 @@ public class PlayerMovement : MonoBehaviour
                 Velocity.x = 0;
                 saveVelocity = Vector2.right * Mathf.Sign(Input.GetAxis("Horizontal"));
             }
+            playMoveSound();
         }
     }
 
@@ -221,8 +229,30 @@ public class PlayerMovement : MonoBehaviour
         inAir = true;
         MovementDir = Vector2.right;
         slideCounter = 0;
+
+        playMoveSound();
     }
 
+
+    void playMoveSound()
+    {
+        if (moveSounds.Length < 1)
+            return;
+        _audioSource.PlayOneShot(moveSounds[moveClipCounter]);
+        moveClipCounter++;
+        if (moveClipCounter >= moveSounds.Length)
+            moveClipCounter = 0;
+    }
+
+    public void playDamageSound()
+    {
+        if (dmgSounds.Length < 1)
+            return;
+        _audioSource.PlayOneShot(dmgSounds[dmgClipCounter]);
+        dmgClipCounter++;
+        if (dmgClipCounter >= dmgSounds.Length)
+            dmgClipCounter = 0;
+    }
 
     private void OnCollisionStay2D(Collision2D collision)
     {

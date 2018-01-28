@@ -114,6 +114,7 @@ public class GameManager : MonoBehaviour
         if (m_Level1Cables.Length != 0) { 
             float maxLength = (m_Level1Cables[0].m_Instance.transform.position - m_Level1Cables[m_Level1Cables.Length - 1].m_Instance.transform.position).magnitude;
             float distToDest = (m_Player.transform.position - m_Level1Cables[m_Level1Cables.Length - 1].m_Instance.transform.position).magnitude;
+
             float sliderValue = 1 - (distToDest / maxLength);
             
             sliderValue = sliderValue > 1 ? 1 : (sliderValue < 0 ? 0 : sliderValue);
@@ -124,14 +125,13 @@ public class GameManager : MonoBehaviour
         int life = m_Player.GetComponent<PlayerManager>().life;
         m_LifeText.text = "CRC Life: " + life;
 
-        if (LoseCheck())
-        {
-            Lose();
-        }
-
         if (WinCheck())
         {
             Win();
+        }
+        else if (LoseCheck())
+        {
+            Lose();
         }
     }
 
@@ -160,15 +160,18 @@ public class GameManager : MonoBehaviour
         GetComponent<EnemySpawner>().SetBack();
     }
 
-    // TODO
     private bool WinCheck()
     {
-        return false;
+        Debug.Log("endX" + m_Level1Cables[m_Level1Cables.Length - 1].m_Instance.transform.position[0]);
+        return m_Level1Cables[m_Level1Cables.Length-1].m_Instance.transform.position.x + 10 < m_Player.transform.position.x;
     }
 
-    // TODO
     private void Win()
     {
         m_LevelStartText.text = "You won!";
+        GetComponent<EnemySpawner>().Stop();
+        m_Player.GetComponent<PlayerMovement>().movementSpeed = 0;
+        m_Player.GetComponent<PlayerMovement>().airSpeed = 0;
+        m_Player.GetComponent<PlayerMovement>().dashForce = 0;
     }
 }
