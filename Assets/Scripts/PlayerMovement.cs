@@ -3,25 +3,33 @@ using System.Collections;
 
 public class PlayerMovement : MonoBehaviour
 {
-
+    //Normal acceleration
     public float movementSpeed;
+    //Movement Dampeners
     public float movementDampening;
     public float airSpeed;
+    //Jump Height
     public float jumpForce;
+    //Rebound when running into Walls and Ceilings
     public float reboundFactor = 0.5f;
+    //public Dash vars
     public float dashForce = 20;
     public float dashTimeOut = 1;
     public int dashCounterMax = 3;
+    //Character Stickyness to ground
     public float leaveGroundInterval;
     public float leaveGroundDistance;
+    //Constraints
     public Vector2 Gravity;
     public Vector2 MaxVelocity;
 
+    //MultiJump
     private bool inAir = true;
     private bool multiJump = false;
     public int multiJumpCounterMax = 1;
     private int jumpCounter = 0;
 
+    //Dash
     public float dashTimer = 0.45f;
     public float dashFloating = 0.0f;
     private float dashStart = 0.0f;
@@ -30,28 +38,30 @@ public class PlayerMovement : MonoBehaviour
     private bool dashing = false;
     private Vector2 saveVelocity;
 
+    //Movement Direction
     private Vector2 FloorNormal;
     private Vector2 MovementDir;
 
+    //Speed
     private Vector2 Velocity = new Vector2();
     private Vector2 Acceleration = new Vector2();
 
     private float leaveGroundStart;
 
+    //Slide of Walls
     private int beginSlideCounter = 3;
     private int slideCounter = 0;
     private bool sliding = false;
 
-    //private Rigidbody2D _rb;
     private Collider2D _coll;
     private CircleCollider2D _circle;
 
+    //Area Enum
     private Volume inVolume;
     private enum Volume { None, Noise, Resistance, Push, Dash, DoubleJump, Floaty};
 
     void Start()
     {
-        //_rb = GetComponent<Rigidbody2D>();
         _coll = GetComponent<BoxCollider2D>();
         _circle = GetComponent<CircleCollider2D>();
     }
@@ -60,11 +70,9 @@ public class PlayerMovement : MonoBehaviour
         tickNoise();
         float leftRightMovement = Input.GetAxis("Horizontal");
 
-        
-
         if (dashing)
         {
-            //transform.position += new Vector3(MovementDir.x, MovementDir.y, 0) * dashForce * Mathf.Sign(leftRightMovement);
+            //Collision prediction
             Vector2 dashVector = saveVelocity * dashForce * Time.deltaTime;
             RaycastHit2D[] hits = new RaycastHit2D[4];
             if (_coll.Cast(dashVector.normalized, hits, dashVector.magnitude, true) > 0)
@@ -78,25 +86,20 @@ public class PlayerMovement : MonoBehaviour
                     }
                 }
             }
-
-            //transform.position += new Vector3(saveVelocity.x, saveVelocity.y) * dashForce * Time.deltaTime;
+            //actual dashing
             transform.position += new Vector3(dashVector.x, dashVector.y);
-
             
             if (dashStart + dashTimer > Time.time)
                 return;
             if(inAir)
                 Velocity.y = dashFloating;
             dashing = false;
-            //Debug.Log(dashCounter);
-            //if (dashCounter >= dashCounterMax)
             dashTimeOutTimer = Time.time;         
         }
         
-
+        //Movement in Air
         if (inAir)
 		{
-            //Velocity.y *= 0.99f;
             Acceleration = MovementDir * leftRightMovement * airSpeed + Gravity;
 			Acceleration *= getMobilityFactor();
 
@@ -104,6 +107,7 @@ public class PlayerMovement : MonoBehaviour
             Velocity.x = Mathf.Sign(Velocity.x) * Mathf.Min(Mathf.Abs(Velocity.x), MaxVelocity.x);
             transform.position += new Vector3(Velocity.x, Velocity.y, 0) * Time.deltaTime;
         }
+        //and on Ground
         else 
         {
             Velocity *= 0.8f;
@@ -114,15 +118,14 @@ public class PlayerMovement : MonoBehaviour
 			Acceleration *= getMobilityFactor();
 
             Velocity += Acceleration * Time.deltaTime;
-            //Debug.Log(Velocity);
             
             Velocity.x = Mathf.Sign(Velocity.x) * Mathf.Min(Mathf.Abs(Velocity.x), MaxVelocity.x);
             Velocity.y = Mathf.Sign(Velocity.y) * Mathf.Min(Mathf.Abs(Velocity.y), MaxVelocity.y);
             transform.position += new Vector3(MovementDir.x * Velocity.x, MovementDir.y * Velocity.x, 0) * Time.deltaTime;
             
+            //Stick to Ground Detection
             if (leaveGroundStart != 0.0f)
             {
-                
                 if (leaveGroundStart + leaveGroundInterval < Time.time)
                 {
                     inAir = true;
@@ -131,10 +134,8 @@ public class PlayerMovement : MonoBehaviour
                 else
                 {
                     RaycastHit2D[] contacts = new RaycastHit2D[1];
-                    //Debug.Log("Casting");
                     if(_coll.Cast(Vector2.down, contacts, leaveGroundDistance, true) > 0)
                     {
-                        //Debug.Log(contacts[0].distance);
                         if (contacts[0].collider.CompareTag("Platform"))
                         {
                             if (!(contacts[0].normal.y - 0.5 <= 0))
@@ -148,6 +149,7 @@ public class PlayerMovement : MonoBehaviour
             
         }
 
+        //Dash Reset
         if (dashTimeOutTimer > 0.0f && dashTimeOutTimer + dashTimeOut < Time.time)
         {
             dashTimeOutTimer = 0.0f;
@@ -185,8 +187,9 @@ public class PlayerMovement : MonoBehaviour
             dashCounter++;
             dashStart = Time.time;
             dashing = true;
-//            saveVelocity = Velocity.normalized;
             saveVelocity = Mathf.Sign(Input.GetAxis("Horizontal")) * MovementDir;
+
+            //If dashing opposite to movement direction, stop after dash
             if (Mathf.Sign(saveVelocity.x) != Mathf.Sign(Velocity.x))
             {
                 Velocity.x = 0;
@@ -206,58 +209,58 @@ public class PlayerMovement : MonoBehaviour
 
     private void OnCollisionStay2D(Collision2D collision)
     {
-        //Debug.Log("Hit something");
-        
         //if (collision.gameObject.CompareTag("Platform"))
         //{
-            
-            Vector2 CollisionNormal = new Vector2();
-            FloorNormal = new Vector2();
-            int count = 0;
-            foreach (ContactPoint2D contact in collision.contacts)
-            {
-                CollisionNormal += contact.normal;
-                if (contact.normal.y - 0.5 <= 0) continue;
-                FloorNormal += contact.normal;
-                count++;
-            }
+			
+		Vector2 CollisionNormal = new Vector2();
+		FloorNormal = new Vector2();
+		int count = 0;
+		foreach (ContactPoint2D contact in collision.contacts)
+		{
+			CollisionNormal += contact.normal;
+			if (contact.normal.y - 0.5 <= 0) continue;
+			FloorNormal += contact.normal;
+			count++;
+		}
 
-            if (count > 0)
-            {
-                leaveGroundStart = 0.0f;
-                jumpCounter = 0;
-                Velocity.y = 0;
+        //We hit some ground
+		if (count > 0)
+		{
+			leaveGroundStart = 0.0f;
+			jumpCounter = 0;
+			Velocity.y = 0;
 
-                MovementDir = new Vector2(FloorNormal.y, -FloorNormal.x);
-                if (MovementDir.x < 0)
-                    MovementDir *= -1;
-                MovementDir = MovementDir / count;
-                inAir = false;
-                slideCounter = 0;
-                sliding = false;
-            }
-            else
-            {
-                if ((slideCounter > beginSlideCounter))
-                {
-                    leaveGroundStart = 0.0f;
-                    jumpCounter = 0;
+			MovementDir = new Vector2(FloorNormal.y, -FloorNormal.x);
+			if (MovementDir.x < 0)
+				MovementDir *= -1;
+			MovementDir = MovementDir / count;
+			inAir = false;
+			slideCounter = 0;
+			sliding = false;
+		}
+        //hit wall or something
+		else
+		{
+			if ((slideCounter > beginSlideCounter))
+			{
+				leaveGroundStart = 0.0f;
+				jumpCounter = 0;
 
-                    sliding = true;
-                    MovementDir = new Vector2(CollisionNormal.y, -CollisionNormal.x);
-                    if (MovementDir.y > 0)
-                        MovementDir *= -1;
-                    inAir = false;
-                    transform.position += new Vector3(CollisionNormal.x, CollisionNormal.y) * Time.deltaTime;
-                    return;
-                }
-                slideCounter++;
-                MovementDir = Vector2.right;
-                Velocity = Vector2.Reflect(Velocity, CollisionNormal.normalized) * reboundFactor;
-                inAir = true;              
-            }   
-        }
-    //}
+				sliding = true;
+				MovementDir = new Vector2(CollisionNormal.y, -CollisionNormal.x);
+				if (MovementDir.y > 0)
+					MovementDir *= -1;
+				inAir = false;
+				transform.position += new Vector3(CollisionNormal.x, CollisionNormal.y) * Time.deltaTime;
+				return;
+			}
+			slideCounter++;
+			MovementDir = Vector2.right;
+			Velocity = Vector2.Reflect(Velocity, CollisionNormal.normalized) * reboundFactor;
+			inAir = true;              
+		}   
+        //}
+	}
 
     private void OnCollisionExit2D(Collision2D collision)
     {
@@ -275,7 +278,7 @@ public class PlayerMovement : MonoBehaviour
         if (noisePresent) {
             if (noiseStart + 5f < Time.time) { 
                 // we take damge
-                Debug.Log("We took damage.");
+                //Debug.Log("We took damage.");
                 noiseStart = Time.time;
             }
         }
@@ -285,7 +288,7 @@ public class PlayerMovement : MonoBehaviour
     bool noisePresent = false;
     float noiseStart = 0.0f;
 
-
+    //Collision with Status Area
     private void OnTriggerStay2D(Collider2D collision)
     {
         string tag = collision.gameObject.tag;
