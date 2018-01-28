@@ -10,7 +10,7 @@ public class GameManager : MonoBehaviour
     public Text m_LevelText;
     public Text m_TimeText;
     public Text m_LevelStartText;
-    public Slider m_LevelProgressSlider;
+    public Scrollbar m_LevelProgressScrollbar;
     public Text m_LifeText;
 
     // loaded prefab for autogeneration
@@ -50,7 +50,7 @@ public class GameManager : MonoBehaviour
         //m_LevelStartText.text = "";
         m_LevelText.text = "Level 1 - Dei Mudda's Lan";
         m_TimeText.text = "TTL: " + m_CurrentTime;
-        m_LevelProgressSlider.value = 0;
+        m_LevelProgressScrollbar.value = 0;
         m_StartTime = m_CurrentTime;
 
         StartCoroutine(GameLoop());
@@ -114,14 +114,11 @@ public class GameManager : MonoBehaviour
         if (m_Level1Cables.Length != 0) { 
             float maxLength = (m_Level1Cables[0].m_Instance.transform.position - m_Level1Cables[m_Level1Cables.Length - 1].m_Instance.transform.position).magnitude;
             float distToDest = (m_Player.transform.position - m_Level1Cables[m_Level1Cables.Length - 1].m_Instance.transform.position).magnitude;
-            float sliderValue = 100 - (distToDest / maxLength) * 100;
-
-            Debug.Log(maxLength); //48
-            Debug.Log(distToDest); //0
-            Debug.Log(sliderValue); //48
-            sliderValue = sliderValue > 100 ? 100 : (sliderValue < 0 ? 0 : sliderValue);
-            if (m_Player.transform.position[0] > maxLength) sliderValue = 100;
-            m_LevelProgressSlider.value = sliderValue;
+            float sliderValue = 1 - (distToDest / maxLength);
+            
+            sliderValue = sliderValue > 1 ? 1 : (sliderValue < 0 ? 0 : sliderValue);
+            if (m_Player.transform.position[0] > maxLength) sliderValue = 1;
+            m_LevelProgressScrollbar.value = sliderValue;
         }
 
         int life = m_Player.GetComponent<PlayerManager>().life;
