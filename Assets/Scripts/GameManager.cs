@@ -50,7 +50,7 @@ public class GameManager : MonoBehaviour
         //m_LevelStartText.text = "";
         m_LevelText.text = "Level 1 - Dei Mudda's Lan";
         m_TimeText.text = "TTL: " + m_CurrentTime;
-        m_LevelProgressSlider.value = 100;
+        m_LevelProgressSlider.value = 0;
         m_StartTime = m_CurrentTime;
 
         StartCoroutine(GameLoop());
@@ -115,7 +115,12 @@ public class GameManager : MonoBehaviour
             float maxLength = (m_Level1Cables[0].m_Instance.transform.position - m_Level1Cables[m_Level1Cables.Length - 1].m_Instance.transform.position).magnitude;
             float distToDest = (m_Player.transform.position - m_Level1Cables[m_Level1Cables.Length - 1].m_Instance.transform.position).magnitude;
             float sliderValue = 100 - (distToDest / maxLength) * 100;
+
+            Debug.Log(maxLength); //48
+            Debug.Log(distToDest); //0
+            Debug.Log(sliderValue); //48
             sliderValue = sliderValue > 100 ? 100 : (sliderValue < 0 ? 0 : sliderValue);
+            if (m_Player.transform.position[0] > maxLength) sliderValue = 100;
             m_LevelProgressSlider.value = sliderValue;
         }
 
@@ -158,15 +163,14 @@ public class GameManager : MonoBehaviour
         GetComponent<EnemySpawner>().SetBack();
     }
 
-    // TODO
     private bool WinCheck()
     {
-        return false;
+        return m_Level1Cables[m_Level1Cables.Length-1].m_Platform.transform.position.x > m_Player.transform.position.x;
     }
 
-    // TODO
     private void Win()
     {
         m_LevelStartText.text = "You won!";
+        GetComponent<EnemySpawner>().Stop();
     }
 }

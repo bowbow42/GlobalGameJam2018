@@ -15,7 +15,7 @@ public class EnemySpawner : MonoBehaviour {
     public int EnemyCountPerWave = 2;
     private int startEnemyCountPerWave;
     private List<GameObject> enemies = new List<GameObject>();
-
+    private bool stopped = false;
 
     void Start () {
         Player = GameObject.FindGameObjectWithTag("Player");
@@ -24,18 +24,22 @@ public class EnemySpawner : MonoBehaviour {
     }
 	
 	void Update () {
-        secondsUntilNextSpawn -= Time.deltaTime;
-        timeUntilWaveSpawn -= Time.deltaTime;
-        if (secondsUntilNextSpawn < 0f)
-            SpawnEnemy();
-        if (timeUntilWaveSpawn < 0f)
+        if (!stopped)
         {
-            if (waveIntervall < 0f)
+            secondsUntilNextSpawn -= Time.deltaTime;
+            timeUntilWaveSpawn -= Time.deltaTime;
+            if (secondsUntilNextSpawn < 0f)
+                SpawnEnemy();
+            if (timeUntilWaveSpawn < 0f)
             {
-                SpawnWave();
+                if (waveIntervall < 0f)
+                {
+                    SpawnWave();
+                }
+                waveIntervall -= Time.deltaTime;
             }
-            waveIntervall -= Time.deltaTime;
         }
+
     }
 
     void SpawnEnemy()
@@ -73,5 +77,11 @@ public class EnemySpawner : MonoBehaviour {
             Destroy(enemy, 0.1f);
         }
         enemies.Clear();
+    }
+
+    public void Stop()
+    {
+        SetBack();
+        stopped = true;
     }
 }
