@@ -67,25 +67,25 @@ public class GameManager : MonoBehaviour
             {
                 if(i == 0)
                 {
-                    // set next position
-                    m_Level1Cables[i].m_Instance = Instantiate(m_TubePart, new Vector3(m_WidthGOStart, 0, 0), Quaternion.identity) as GameObject; 
+                    m_Level1Cables[i].m_Instance = Instantiate(m_TubePart, new Vector3(0, 0, 0), Quaternion.identity) as GameObject; 
                     m_Level1Cables[i].m_PadPos = new Vector3(0, 0, 0);
                     m_Level1Cables[i].m_Platform = Instantiate(m_GameObjectStart, m_Level1Cables[i].m_Instance.transform.position, Quaternion.identity) as GameObject;
+                    m_Level1Cables[i].m_ItemThickness = m_WidthGOStart;
                     m_Level1Cables[i].Setup();
                 }
                 else
                 {
-                    // set next position
-                    m_Level1Cables[i].m_Instance = Instantiate(m_TubePart, new Vector3(m_Platforms[selectedObj].m_Width + m_Level1Cables[i - 1].m_Instance.transform.position[0], 0, 0), Quaternion.identity) as GameObject; 
+                    m_Level1Cables[i].m_Instance = Instantiate(m_TubePart, new Vector3(m_Level1Cables[i-1].m_ItemThickness + m_Level1Cables[i - 1].m_Instance.transform.position[0], 0, 0), Quaternion.identity) as GameObject; 
                     m_Level1Cables[i].m_PadPos = new Vector3(0, 0, 0);
                     m_Level1Cables[i].m_Platform = Instantiate(m_GameObjectEnd, m_Level1Cables[i].m_Instance.transform.position, Quaternion.identity) as GameObject;
+                    m_Level1Cables[i].m_ItemThickness = m_WidthGOEnd;
                     m_Level1Cables[i].Setup();
                 }
             }
             else
             {
                 // set next position
-                m_Level1Cables[i].m_Instance = Instantiate(m_TubePart, new Vector3(m_Platforms[selectedObj].m_Width + m_Level1Cables[i - 1].m_Instance.transform.position[0], 0, 0), Quaternion.identity) as GameObject;
+                m_Level1Cables[i].m_Instance = Instantiate(m_TubePart, new Vector3(m_Level1Cables[i-1].m_ItemThickness + m_Level1Cables[i - 1].m_Instance.transform.position[0], 0, 0), Quaternion.identity) as GameObject;
                 // when randomness is disabled for this go
                 if (m_Platforms[selectedObj].m_DisableRandomness)
                 {
@@ -98,6 +98,7 @@ public class GameManager : MonoBehaviour
                     m_Level1Cables[i].m_PadPos = new Vector3(Random.Range(-1, 1), offSet, 0);
                 }
                 m_Level1Cables[i].m_Platform = Instantiate(m_Platforms[selectedObj].m_GameObject, m_Level1Cables[i].m_PadPos + m_Level1Cables[i].m_Instance.transform.position, Quaternion.identity) as GameObject;
+                m_Level1Cables[i].m_ItemThickness = m_Platforms[selectedObj].m_Width;
                 m_Level1Cables[i].Setup();
             }
         }
