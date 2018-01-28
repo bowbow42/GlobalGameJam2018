@@ -49,6 +49,7 @@ public class PlayerManager : MonoBehaviour {
         {
             invincible = true;
             life--;
+            move.playDamageSound();
         }
     }
 
