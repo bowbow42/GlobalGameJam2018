@@ -66,6 +66,23 @@ public class PlayerMovement : MonoBehaviour
         _circle = GetComponent<CircleCollider2D>();
     }
 
+    public void reset(){
+        Velocity.x = 0f;
+        Velocity.y = 0f;
+
+        Acceleration.x = 0f;
+        Acceleration.y = 0f;
+
+        sliding = false;
+        dashing = false;
+        dashCounter = 0;
+        dashStart = 0f;
+
+        inAir = true;
+        multiJump = false;
+
+    }
+
     void FixedUpdate() {
         tickNoise();
         float leftRightMovement = Input.GetAxis("Horizontal");

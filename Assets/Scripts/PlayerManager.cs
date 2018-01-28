@@ -4,6 +4,7 @@ using System.Collections;
 public class PlayerManager : MonoBehaviour {
 
     public GameObject lastSpawn;
+    public PlayerMovement move;
 
     // Is checked in GameManager to Reset the whole level
     public int life = 5;
@@ -36,6 +37,12 @@ public class PlayerManager : MonoBehaviour {
             life -= startLife;
     }
 
+    private void OnTriggerEnter2D(Collider2D collision)
+    {
+        if (collision.gameObject.CompareTag("Enemy"))
+            DamagePlayer();
+    }
+
     public void DamagePlayer()
     {
         if (!invincible)
@@ -50,5 +57,6 @@ public class PlayerManager : MonoBehaviour {
     {
         transform.position = lastSpawn.transform.position;
         life = startLife;
+        move.reset();
     }
 }
