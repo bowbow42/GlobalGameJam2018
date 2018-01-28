@@ -110,13 +110,14 @@ public class GameManager : MonoBehaviour
             m_CurrentTime -= Time.deltaTime;
             m_TimeText.text = "TTL: " + (int)m_CurrentTime;
         }
+        if (m_Level1Cables.Length != 0) { 
+            float maxLength = (m_Level1Cables[0].m_Instance.transform.position - m_Level1Cables[m_Level1Cables.Length - 1].m_Instance.transform.position).magnitude;
+            float distToDest = (m_Player.transform.position - m_Level1Cables[m_Level1Cables.Length - 1].m_Instance.transform.position).magnitude;
+            float sliderValue = 100 - (distToDest / maxLength) * 100;
+            sliderValue = sliderValue > 100 ? 100 : (sliderValue < 0 ? 0 : sliderValue);
+            m_LevelProgressSlider.value = sliderValue;
+        }
 
-
-        float maxLength = (m_Level1Cables[0].m_Instance.transform.position - m_Level1Cables[m_Level1Cables.Length - 1].m_Instance.transform.position).magnitude;
-        float distToDest = (m_Player.transform.position - m_Level1Cables[m_Level1Cables.Length - 1].m_Instance.transform.position).magnitude;
-        float sliderValue = 100 - (distToDest / maxLength) * 100;
-        sliderValue = sliderValue > 100 ? 100 : (sliderValue < 0 ? 0 : sliderValue);
-        m_LevelProgressSlider.value = sliderValue;
         int life = m_Player.GetComponent<PlayerManager>().life;
         m_LifeText.text = "CRC Life: " + life;
 
