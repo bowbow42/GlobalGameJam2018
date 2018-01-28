@@ -162,7 +162,7 @@ public class GameManager : MonoBehaviour
 
     private bool WinCheck()
     {
-        Debug.Log("endX" + m_Level1Cables[m_Level1Cables.Length - 1].m_Instance.transform.position[0]);
+        //Debug.Log("endX" + m_Level1Cables[m_Level1Cables.Length - 1].m_Instance.transform.position[0]);
         return m_Level1Cables[m_Level1Cables.Length-1].m_Instance.transform.position.x + 10 < m_Player.transform.position.x;
     }
 
