@@ -158,15 +158,14 @@ public class GameManager : MonoBehaviour
         GetComponent<EnemySpawner>().SetBack();
     }
 
-    // TODO
     private bool WinCheck()
     {
-        return false;
+        return m_Level1Cables[m_Level1Cables.Length-1].m_Platform.transform.position.x > m_Player.transform.position.x;
     }
 
-    // TODO
     private void Win()
     {
         m_LevelStartText.text = "You won!";
+        GetComponent<EnemySpawner>().Stop();
     }
 }
